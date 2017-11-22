@@ -28,14 +28,14 @@ class Plotter:
 	def plotBasisFunctions(self, eigenvalues, eigenvectors):
 		'''3d plot of the basis function. Right now I am plotting eigenvectors,
 		   so each coordinate of the eigenvector correspond to the value to be
-		   plotted for the correspondent state.''' 
-		for i in xrange(len(eigenvalues)):	
+		   plotted for the correspondent state.'''
+		for i in range(len(eigenvalues)):
 			fig, ax = plt.subplots(subplot_kw = dict(projection = '3d'))
 			X, Y = np.meshgrid(np.arange(self.numRows), np.arange(self.numCols))
 			Z = eigenvectors[:,i].reshape(self.numCols, self.numRows)
 
-			for ii in xrange(len(X)):
-				for j in xrange(len(X[ii])/2):
+			for ii in range(len(X)):
+				for j in range(int(len(X[ii])/2)):
 					tmp = X[ii][j]
 					X[ii][j] = X[ii][len(X[ii]) - j - 1]
 					X[ii][len(X[ii]) - j - 1] = tmp
@@ -58,8 +58,8 @@ class Plotter:
 		X, Y = np.meshgrid(np.arange(self.numCols), np.arange(self.numRows))
 		Z = valueFunction.reshape(self.numRows, self.numCols)
 
-		for i in xrange(len(X)):
-			for j in xrange(len(X[i])/2):
+		for i in range(len(X)):
+			for j in range(int(len(X[i])/2)):
 				tmp = X[i][j]
 				X[i][j] = X[i][len(X[i]) - j - 1]
 				X[i][len(X[i]) - j - 1] = tmp
@@ -74,7 +74,7 @@ class Plotter:
 
 	def plotPolicy(self, policy, prefix):
 		plt.clf()
-		for idx in xrange(len(policy)):
+		for idx in range(len(policy)):
 			i, j = self.env.getStateXY(idx)
 
 			dx = 0
@@ -107,13 +107,13 @@ class Plotter:
 
 		plt.xlim([0, self.numCols])
 		plt.ylim([0, self.numRows])
-		
 
-		for i in xrange(self.numCols):
+
+		for i in range(self.numCols):
 			plt.axvline(i, color='k', linestyle=':')
 		plt.axvline(self.numCols, color='k', linestyle=':')
-		
-		for j in xrange(self.numRows):
+
+		for j in range(self.numRows):
 			plt.axhline(j, color='k', linestyle=':')
 		plt.axhline(self.numRows, color='k', linestyle=':')
 
