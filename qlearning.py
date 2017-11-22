@@ -14,8 +14,7 @@ class QLearning:
     numPrimitiveActions = -1
     toLearnUsingOnlyPrimitiveActions = False
 
-    def __init__(self, alpha, gamma, epsilon, environment, seed=1,
-                 useOnlyPrimActions=False, actionSet=None, actionSetPerOption=None):
+    def __init__(self, alpha, gamma, epsilon, environment, seed=1, useOnlyPrimActions=False, actionSet=None, actionSetPerOption=None):
 
         '''Initialize variables that are useful everywhere.'''
         print("Qlearning using options", not useOnlyPrimActions)
@@ -63,7 +62,7 @@ class QLearning:
     def epsilonGreedy(self, F, s, epsilon=None):
         ''' Epsilon-greedy function. F needs to be Q[s], so it
 			consists of one value per action.'''
-        if epsilon == None:
+        if epsilon is None:
             epsilon = self.epsilon
         rnd = random.uniform(0, 1)
 

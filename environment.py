@@ -32,17 +32,18 @@ class GridWorld:
     goalX = 0
     goalY = 0
 
-    def __init__(self, path=None, strin=None, useNegativeRewards=False):
-        '''Return a GridWorld object that instantiates the MDP defined in a file
-		(specified in path). In case it is None, then the MDP definition is read
-		from strin, which is a string with the content that path would hold. The
-		input should have a very specific format. The first line should contain
-		two numbers separated by a comma. These numbers define the dimensions of
-		the MDP. The rest of the lines are composed of X's denoting walls and of
-		.'s denoting empty spaces in the MDP. S denotes the starting state.'''
-        if path != None:
+    def __init__(self, path=None, strin=None, useNegativeRewards=False, env_id=-1):
+        # '''Return a GridWorld object that instantiates the MDP defined in a file
+        # (specified in path). In case it is None, then the MDP definition is read
+        # from strin, which is a string with the content that path would hold. The
+        # input should have a very specific format. The first line should contain
+        # two numbers separated by a comma. These numbers define the dimensions of
+        # the MDP. The rest of the lines are composed of X's denoting walls and of
+        # .'s denoting empty spaces in the MDP. S denotes the starting state.'''
+        self.env_id = env_id
+        if path is not None:
             self._readFile(path)
-        elif strin != None:
+        elif strin is not None:
             self.strMDP = strin
         else:
             print('You are supposed to provide an MDP specification as input!')
@@ -50,7 +51,7 @@ class GridWorld:
 
         self._parseString()
         self.currX = self.startX
-        assert int == type(self.currX)
+        assert isinstance(self.currX, int)
         self.currY = self.startY
         self.numStates = self.numRows * self.numCols
         self.useNegativeRewards = useNegativeRewards
@@ -63,8 +64,8 @@ class GridWorld:
 
     def _parseString(self):
         ''' I now parse the received string. I'll store everything in a matrix
-		(matrixMDP) such that -1 means wall and 0 means available square. The
-		letter 'S' is converted to the initial (x,y) position. '''
+        (matrixMDP) such that -1 means wall and 0 means available square. The
+        letter 'S' is converted to the initial (x,y) position. '''
         data = self.strMDP.split('\n')
         self.numRows = int(data[0].split(',')[0])
         self.numCols = int(data[0].split(',')[1])
@@ -87,23 +88,23 @@ class GridWorld:
 
     def _getStateIndex(self, x, y):
         ''' Given a state coordinate (x,y) this method returns the index that
-			uniquely identifies this state.'''
+            uniquely identifies this state.'''
         idx = y + x * self.numCols
         return idx
 
     def getStateXY(self, idx):
         ''' Given the index that uniquely identifies each state this method
-			returns its equivalent coordinate (x,y).'''
+            returns its equivalent coordinate (x,y).'''
         y = idx % self.numCols
         x = int((idx - y) / self.numCols)
         return x, y
 
     def _getNextState(self, action):
         ''' This function returns what is going to be the next state (x,y)
-		    given an action. It does not update the next state, it is a one-step
-		    forward model. '''
+            given an action. It does not update the next state, it is a one-step
+            forward model. '''
         nextX = self.currX
-        assert int == type(self.currX)
+        assert isinstance(self.currX, int)
         nextY = self.currY
 
         if action == 'terminate':
@@ -161,7 +162,7 @@ class GridWorld:
 
     def _getNextReward(self, currX, currY, action, nextX, nextY):
         ''' Returns the reward the agent will observe if in state (currX, currY)
-			and it takes action 'action' leading to the state (nextX, nextY).'''
+            and it takes action 'action' leading to the state (nextX, nextY).'''
 
         # If a reward vector was not informed we get -1 everywhere until
         # termination. After termination this function is not called anymore,
@@ -185,7 +186,6 @@ class GridWorld:
         # Now I can finally compute the reward
         reward = self.rewardFunction[nextStateIdx] - self.rewardFunction[currStateIdx]
 
-
         return reward
 
     def reset(self):
@@ -203,13 +203,13 @@ class GridWorld:
 
     def act(self, action):
         ''' At first there are four possible actions: up, down, left and right.
-		If the agent tries to go to a -1 state it will stay on the same coord.
-		I decided to not implement any stochasticity for now.'''
+        If the agent tries to go to a -1 state it will stay on the same coord.
+        I decided to not implement any stochasticity for now.'''
 
         # Basically I get what will be the next state and before really making
         # it my current state I verify everything is sound (it is terminal only
         # if we are not using eigenpurposes).
-        if self.rewardFunction == None and self.isTerminal():
+        if self.rewardFunction is None and self.isTerminal():
             return 0
         else:
             nextX, nextY = self._getNextState(action)
@@ -237,8 +237,8 @@ class GridWorld:
         self.idxMatrix = np.zeros((self.numRows, self.numCols), dtype=np.int)
 
         '''I'll try for all states not in the borders (they have to be walls)
-		all 4 possible directions. If the next state is also available we add
-		such entry to the adjancency matrix, otherwise we don't.'''
+        all 4 possible directions. If the next state is also available we add
+        such entry to the adjancency matrix, otherwise we don't.'''
         for i in range(len(self.idxMatrix)):
             for j in range(len(self.idxMatrix[i])):
                 self.idxMatrix[i][j] = i * self.numCols + j
@@ -257,7 +257,7 @@ class GridWorld:
 
     def getAdjacencyMatrix(self):
         ''' If I never did it before, I will fill the adjacency matrix.
-		Otherwise I'll just return the one that was filled before.'''
+        Otherwise I'll just return the one that was filled before.'''
         if self.adjMatrix == None:
             self._fillAdjacencyMatrix()
 
@@ -265,7 +265,7 @@ class GridWorld:
 
     def getNextStateAndReward(self, currState, action):
         ''' One step forward model: return the next state and reward given an
-		observation. '''
+        observation. '''
 
         # In case it is the absorbing state encoding end of an episode
         if currState == self.numStates:
@@ -304,8 +304,8 @@ class GridWorld:
 
     def getNextStateAndRewardFromOption(self, currState, o_pi, actionSet):
         '''Execute option until it terminates. It will always terminate. We
-			then return the number of time steps it took (-reward) and the
-			terminal state.'''
+            then return the number of time steps it took (-reward) and the
+            terminal state.'''
 
         # In case it is the absorbing state encoding end of an episode
         if currState == self.numStates:
@@ -369,13 +369,13 @@ class GridWorld:
 
     def defineRewardFunction(self, vector):
         ''' Load vector that will define the reward function: the dot product
-		    between the loaded vector and the feature representation.'''
+            between the loaded vector and the feature representation.'''
         self.rewardFunction = vector
 
     def defineGoalState(self, idx):
         ''' Returns True if the goal was properly set, otherwise returns False.
-		    One may fail to set a goal if it tries to do so in a wall state, in
-		    an invalid index, etc.'''
+            One may fail to set a goal if it tries to do so in a wall state, in
+            an invalid index, etc.'''
 
         x, y = self.getStateXY(idx)
 
